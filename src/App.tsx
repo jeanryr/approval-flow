@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { Team, User } from "./types";
+import { TeamsApprovalScheme, ApprovalSchemeItem, Team, User } from "./types";
 import TeamsList from "./components/TeamsList";
 import ApprovalSetup from "./components/ApprovalSetup";
+
+const LOCAL_STORAGE_KEY = "teams-approval-scheme";
 
 const teams_data = [
   { id: "TEAM1", name: "Marketing", users: ["USR1", "USR3"] },
@@ -33,13 +35,54 @@ function App() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team>();
+  const [approvalsByTeam, setApprovalsByTeam] = useState<{[teamId: string]: User[]}>();
+
+  function checkIfCurrentApprovalSchemeIsOk(approvalSchemeItems: ApprovalSchemeItem[]) {
+    for (let i = 0; i < approvalSchemeItems.length; i++) {
+      if (!approvalSchemeItems[i].user_id || approvalSchemeItems[i].user_id === "") return false;
+      if (i < approvalSchemeItems.length - 1 && approvalSchemeItems[i].to !== approvalSchemeItems[i + 1].from)
+        return false;
+    }
+    return true;
+  }
+
+  function getApprovalSchemeFromLocalStorage(): TeamsApprovalScheme {
+    const teamsApprovalScheme = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return teamsApprovalScheme ? JSON.parse(teamsApprovalScheme) : {};
+  }
+
+  function saveApprovalSchemeToLocalStorage(approvalSchemeItems: ApprovalSchemeItem[], selectedTeamId: string) {
+    if (checkIfCurrentApprovalSchemeIsOk(approvalSchemeItems)) {
+      const teamsApprovalScheme = getApprovalSchemeFromLocalStorage();
+      teamsApprovalScheme[selectedTeamId] = approvalSchemeItems;
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(teamsApprovalScheme));
+      setSelectedTeam(undefined);
+    } else {
+      alert("Something is wrong with your approval scheme, check that you have selected an user for each threshold");
+    }
+  }
+  
+  function setApprovalsForEachTeam(teamsApprovalScheme: TeamsApprovalScheme) {
+    let newApprovalsByTeam: {[teamId: string]: User[]} = {};
+    for (const [teamKey, value] of Object.entries(teamsApprovalScheme)) {
+      newApprovalsByTeam[teamKey] = value.map(x=> getUser(x.user_id));
+    }
+    setApprovalsByTeam(newApprovalsByTeam);
+  }
+
+  useEffect(()=> {
+    const approvalScheme = getApprovalSchemeFromLocalStorage();
+    if (approvalScheme){
+      setApprovalsForEachTeam(approvalScheme);
+    }
+  }, [users, teams, selectedTeam])
 
   useEffect(() => {
-    async function getTeams() {
+    async function getTeamsAndUsers() {
       setTeams(teams_data);
       setUsers(users_data);
     }
-    getTeams();
+    getTeamsAndUsers();
   }, []);
 
   function getUser(userId: string): User {
@@ -53,9 +96,16 @@ function App() {
   return (
     <div className="App">
       {selectedTeam ? (
-        <ApprovalSetup selectedTeam={selectedTeam} getUser={getUser} getAllUsers={()=> users} unSelectTeam={() => setSelectedTeam(undefined)} />
+        <ApprovalSetup
+          selectedTeam={selectedTeam}
+          getUser={getUser}
+          getAllUsers={() => users}
+          unSelectTeam={() => setSelectedTeam(undefined)}
+          saveApprovalSchemeToLocalStorage={saveApprovalSchemeToLocalStorage}
+          getApprovalSchemeFromLocalStorage={getApprovalSchemeFromLocalStorage}
+        />
       ) : (
-        <TeamsList teams={teams} getUser={getUser} selectTeam={setSelectedTeam} />
+        <TeamsList teams={teams} getUser={getUser} selectTeam={setSelectedTeam} approvalsByTeam={approvalsByTeam ?? {}} />
       )}
     </div>
   );

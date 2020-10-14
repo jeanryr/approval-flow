@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { ApprovalScheme, ApprovalSchemeItem, Team, User } from "../types";
+import { TeamsApprovalScheme, ApprovalSchemeItem, Team, User } from "../types";
 import ApprovalItem from "./ApprovalItem";
 import "./ApprovalSetup.css";
-
-const LOCAL_STORAGE_KEY = "teams-approval-scheme";
 
 function ApprovalSetup({
   selectedTeam,
   getUser,
   unSelectTeam,
   getAllUsers,
+  getApprovalSchemeFromLocalStorage,
+  saveApprovalSchemeToLocalStorage
 }: {
   selectedTeam: Team;
   getUser: (userId: string) => User;
   unSelectTeam: () => void;
   getAllUsers: () => User[];
+  getApprovalSchemeFromLocalStorage: ()=> TeamsApprovalScheme;
+  saveApprovalSchemeToLocalStorage: (approvalSchemeItems: ApprovalSchemeItem[], selectedTeamId: string) => void;
 }) {
   const [approvalScheme, setApprovalScheme] = useState<ApprovalSchemeItem[]>([]);
   const [availableUsers, setAvailableUsers] = useState<User[]>([]);
@@ -37,30 +39,6 @@ function ApprovalSetup({
         user_id: "",
       },
     ];
-  }
-
-  function getApprovalSchemeFromLocalStorage(): ApprovalScheme {
-    const teamsApprovalScheme = localStorage.getItem(LOCAL_STORAGE_KEY);
-    return teamsApprovalScheme ? JSON.parse(teamsApprovalScheme) : {};
-  }
-
-  function saveApprovalSchemeToLocalStorage() {
-    if (checkIfCurrentApprovalSchemeIsOk()) {
-      const teamsApprovalScheme = getApprovalSchemeFromLocalStorage();
-      teamsApprovalScheme[selectedTeam.id] = approvalScheme;
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(teamsApprovalScheme));
-      unSelectTeam();
-    } else {
-      alert("Something is wrong with your approval scheme, check that you have selected an user for each threshold");
-    }
-  }
-
-  function checkIfCurrentApprovalSchemeIsOk() {
-    for (let i = 0; i < approvalScheme.length; i++) {
-      if (!approvalScheme[i].user_id || approvalScheme[i].user_id === "") return false;
-      if (i < approvalScheme.length - 1 && approvalScheme[i].to !== approvalScheme[i + 1].from) return false;
-    }
-    return true;
   }
 
   function addThreshold(index: number) {
@@ -125,7 +103,7 @@ function ApprovalSetup({
       setApprovalScheme(initApprovalFlow());
       setAvailableUsers(getAllUsers());
     }
-  }, [selectedTeam.id, getAllUsers]);
+  }, [selectedTeam.id, getAllUsers, getApprovalSchemeFromLocalStorage]);
 
   return (
     <div className="container">
@@ -151,7 +129,7 @@ function ApprovalSetup({
               </div>
             ))}
             <button onClick={() => unSelectTeam()}>Cancel</button>
-            <button data-testid="save-btn" onClick={() => saveApprovalSchemeToLocalStorage()}>
+            <button data-testid="save-btn" onClick={() => saveApprovalSchemeToLocalStorage(approvalScheme, selectedTeam.id)}>
               Save approval flow
             </button>
           </div>

@@ -35,7 +35,7 @@ function ApprovalItem({
     <div className="card card-approval-item">
       {index === 0 && (
         <div data-testid="up-to-elem">
-          Up to
+          Up to {" "}
           <input
             data-testid="up-to-select"
             type="number"

@@ -93,4 +93,21 @@ context('Check approval flow', () => {
 
     cy.clearLocalStorage()
   });
+
+
+  it('should show the 3 firt approval after saving in local state', () => {
+    const teamName = 'Marketing';
+    const valueToModify = 423;
+    cy.get('[data-testid=team-list-name]').contains(teamName).click();
+    cy.get('[data-testid=up-to-select]').clear().type(valueToModify);
+    cy.get('select').eq(0).select('USR1');
+    cy.get('select').eq(1).select('USR2');
+    cy.get('select').eq(2).select('USR7');
+    cy.get('[data-testid=save-btn]').click();
+
+    cy.get('[data-testid=approval-list]').contains('Eugene');
+    cy.get('[data-testid=approval-list]').contains('Ralph');
+    cy.get('[data-testid=approval-list]').contains('Andy');
+    cy.clearLocalStorage()
+  });
 })
