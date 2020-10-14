@@ -54,9 +54,6 @@ body
   position: relative;
   margin-top: 20px;
 }
-.card-body > div {
-  display: inline-block;
-}
 
 .container .card .card-body li {
   text-align: left;

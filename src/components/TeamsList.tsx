@@ -2,26 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Team, User } from "../types";
 import "./TeamsList.css";
 
-function TeamsList({
-  teams,
-  getUser,
-}: {
-  teams: Team[];
-  getUser: (userId: string) => User;
-}) {
+function TeamsList({ teams, selectTeam, getUser }: { teams: Team[]; selectTeam: (team: Team) => void; getUser: (userId: string) => User }) {
   return (
     <div className="container">
       <div className="row">
         {teams.map((team) => (
-          <div
-            data-testid="team-list-card"
-            className="card team-card"
-            key={`${team.id}`}
-          >
-            <div
-              data-testid="team-list-name"
-              className="card-header team-header"
-            >
+          <div data-testid="team-list-card" onClick={() => selectTeam(team)} className="card team-card" key={`${team.id}`}>
+            <div data-testid="team-list-name" className="card-header team-header">
               <h2>{team.name}</h2>
             </div>
             <div className="card-body">

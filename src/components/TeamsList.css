@@ -4,6 +4,10 @@
   min-height: 250px;
 }
 
+.team-card .card-body > div {
+  display: inline-block;
+}
+
 .team-card:hover
 {
   box-shadow: inset -6px -6px 20px rgba(255,255,255,0.5), inset 6px 6px 20px rgba(0,0,0,0.05);

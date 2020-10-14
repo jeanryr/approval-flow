@@ -33,4 +33,10 @@ context('Check approval flow', () => {
       });
     });
   })
+
+  it('should go to approval scheme component when clicking on a team', () => {
+    const teamName = 'Marketing';
+    cy.get('[data-testid=team-list-name]').contains(teamName).click();
+    cy.get('[data-testid=selected-team-name]').contains(teamName);
+  })
 })
