@@ -7,6 +7,7 @@ function ApprovalItem({
   index,
   availableUsers,
   updateThreshold,
+  deleteThreshold,
   updateUser,
   getUser,
 }: {
@@ -14,6 +15,7 @@ function ApprovalItem({
   index: number;
   availableUsers: User[];
   updateThreshold: (index: number, threshold: number) => void;
+  deleteThreshold: (index: number) => void;
   updateUser: (index: number, userId: string) => void;
   getUser: (userId: string) => User;
 }) {
@@ -23,6 +25,9 @@ function ApprovalItem({
     const user = getUser(item.user_id);
     if (user.first_name !== "Not") {
       setCurrentUser(user);
+    }
+    else {
+      setCurrentUser(undefined);
     }
   }, [item.user_id, getUser]);
 
@@ -44,10 +49,11 @@ function ApprovalItem({
         <div data-testid="from-to-elem">
           From {item.from}EUR to{" "}
           <input type="number" value={item.to} onChange={(e) => updateThreshold(index, parseInt(e.target.value))} />
-          EUR <button style={{ float: "right" }}>Delete</button>
+          EUR <button data-testid="delete-threshold" style={{ float: "right" }} onClick={()=> deleteThreshold(index)}>Delete</button>
         </div>
       )}
-      {index === -1 && <div>Above {item.from}EUR</div>}
+      {index === -1 && (
+      <div data-testid="above-elem" >Above {item.from}EUR</div>)}
       <select onChange={(e) => updateUser(index, e.target.value)}>
         {currentUser ? (
           <option value={currentUser.id}>

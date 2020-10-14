@@ -63,6 +63,21 @@ function ApprovalSetup({
     return true;
   }
 
+  function addThreshold(index: number) {
+    let newApprovalScheme = [...approvalScheme];
+    newApprovalScheme.splice(index+1, 0, {from: newApprovalScheme[index].to, to: newApprovalScheme[index+1].from, user_id:"" })
+    setApprovalScheme(newApprovalScheme);
+  }
+
+  function deleteThreshold(index: number) {
+    let newApprovalScheme = [...approvalScheme];
+    newApprovalScheme[index-1].to = newApprovalScheme[index].to;
+    if (newApprovalScheme[index+1].to !== -1)
+      newApprovalScheme[index-1].from = newApprovalScheme[index].from;
+    newApprovalScheme.splice(index, 1);
+    setApprovalScheme(newApprovalScheme);
+  }
+
   function updateThreshold(index: number, threshold: number) {
     let newApprovalScheme = [...approvalScheme];
     if (index < newApprovalScheme.length) {
@@ -121,15 +136,19 @@ function ApprovalSetup({
         ) : (
           <div className="card-body">
             {approvalScheme.map((approvalItem, index) => (
-              <ApprovalItem
-                key={`approvalItem${index}`}
-                item={approvalItem}
-                index={index === approvalScheme.length - 1 ? -1 : index}
-                availableUsers={availableUsers}
-                getUser={getUser}
-                updateThreshold={updateThreshold}
-                updateUser={updateUser}
-              />
+              <div>
+                <ApprovalItem
+                  key={`approvalItem${index}`}
+                  item={approvalItem}
+                  index={index === approvalScheme.length - 1 ? -1 : index}
+                  availableUsers={availableUsers}
+                  getUser={getUser}
+                  updateThreshold={updateThreshold}
+                  deleteThreshold={deleteThreshold}
+                  updateUser={updateUser}
+                />
+                {(index < approvalScheme.length -1) && <div style={{textAlign: "center"}}><button data-testid="add-threshold" onClick={() => addThreshold(index)}>Add a threshold</button></div>}
+              </div>
             ))}
             <button onClick={() => unSelectTeam()}>Cancel</button>
             <button data-testid="save-btn" onClick={() => saveApprovalSchemeToLocalStorage()}>
