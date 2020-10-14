@@ -1,0 +1,55 @@
+.team-card
+{
+  cursor: pointer;
+  min-height: 250px;
+}
+
+.team-card:hover
+{
+  box-shadow: inset -6px -6px 20px rgba(255,255,255,0.5), inset 6px 6px 20px rgba(0,0,0,0.05);
+}
+
+.team-card:hover
+{
+  transform: scale(0.98);
+}
+
+.first-3 {
+  margin-right: 30px;
+}
+
+.list-users {
+  width: 40%;
+  text-overflow: ellipsis;
+}
+
+h2
+{
+  color: #32a3b1;
+  font-weight: 700;
+  font-size: 1.4em;
+  letter-spacing: 2px;
+}
+
+.container .card
+{
+  width: 30%;
+}
+
+@media(min-width: 767px) and (max-width: 1000 px){
+  .container .card{
+      width: 33%;
+  }
+}
+
+@media(min-width: 577px) and (max-width: 768px){
+  .container .card{
+      width: 50%;
+  }
+}
+
+@media(max-width: 576px){
+  .container .card{
+      width: 100%;
+  }
+}
