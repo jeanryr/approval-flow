@@ -42,7 +42,6 @@ function App() {
     getTeams();
   }, []);
 
-
   function getUser(userId: string): User {
     let userToFind = users.find((user) => user.id === userId);
     if (!userToFind) {
@@ -54,7 +53,7 @@ function App() {
   return (
     <div className="App">
       {selectedTeam ? (
-        <ApprovalSetup selectedTeam={selectedTeam} getUser={getUser} unSelectTeam={() => setSelectedTeam(undefined)} />
+        <ApprovalSetup selectedTeam={selectedTeam} getUser={getUser} getAllUsers={()=> users} unSelectTeam={() => setSelectedTeam(undefined)} />
       ) : (
         <TeamsList teams={teams} getUser={getUser} selectTeam={setSelectedTeam} />
       )}

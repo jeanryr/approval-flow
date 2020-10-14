@@ -3,8 +3,19 @@ import { ApprovalScheme, Team, User } from "../types";
 import ApprovalItem from "./ApprovalItem";
 import "./ApprovalSetup.css";
 
-function ApprovalSetup({ selectedTeam, getUser, unSelectTeam }: { selectedTeam: Team; getUser: (userId: string) => User, unSelectTeam: () => void }) {
+function ApprovalSetup({
+  selectedTeam,
+  getUser,
+  unSelectTeam,
+  getAllUsers,
+}: {
+  selectedTeam: Team;
+  getUser: (userId: string) => User;
+  unSelectTeam: () => void;
+  getAllUsers: () => User[];
+}) {
   const [approvalScheme, setApprovalScheme] = useState<ApprovalScheme>([]);
+  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
 
   function initApprovalFlow() {
     return [
@@ -35,29 +46,53 @@ function ApprovalSetup({ selectedTeam, getUser, unSelectTeam }: { selectedTeam: 
     setApprovalScheme(newApprovalScheme);
   }
 
+  function updateUser(index: number, user_id: string) {
+    let newAvailableUsers = [...availableUsers];
+    newAvailableUsers.splice(newAvailableUsers.findIndex(e => e.id === user_id), 1);
+    const userToAdd = getUser(approvalScheme[index].user_id);
+    if (userToAdd.first_name !== 'Not'){
+      newAvailableUsers.push(userToAdd);
+    }
+    setAvailableUsers(newAvailableUsers);
+
+    let newApprovalScheme = [...approvalScheme];
+    newApprovalScheme[index].user_id = user_id;
+    setApprovalScheme(newApprovalScheme);
+  }
+
   useEffect(() => {
     if (approvalScheme.length === 0) {
       setApprovalScheme(initApprovalFlow());
+      setAvailableUsers(getAllUsers());
+    } else {
+      approvalScheme.map((scheme) => {
+        let newAvailableUsers = [...availableUsers];
+        newAvailableUsers.splice(newAvailableUsers.findIndex(e => e.id === scheme.user_id), 1);
+        setAvailableUsers(newAvailableUsers);
+      });
     }
   }, []);
 
   return (
     <div className="container">
       <div className="card card-approval-setup">
-        <h2 data-testid="selected-team-name" >{selectedTeam.name}</h2>
+        <h2 data-testid="selected-team-name">{selectedTeam.name}</h2>
         {approvalScheme.length < 2 ? (
           <div>There is an issue with the approval flow</div>
         ) : (
           <div className="card-body">
             {approvalScheme.map((approvalItem, index) => (
               <ApprovalItem
+                key={`approvalItem${index}`}
                 item={approvalItem}
                 index={index === approvalScheme.length - 1 ? -1 : index}
+                availableUsers={availableUsers}
                 getUser={getUser}
                 updateThreshold={updateThreshold}
+                updateUser={updateUser}
               />
             ))}
-            <button onClick={() => unSelectTeam()} >Cancel</button>
+            <button onClick={() => unSelectTeam()}>Cancel</button>
             <button>Save approval flow</button>
           </div>
         )}

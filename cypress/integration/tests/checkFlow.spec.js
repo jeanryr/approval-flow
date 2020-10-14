@@ -39,4 +39,12 @@ context('Check approval flow', () => {
     cy.get('[data-testid=team-list-name]').contains(teamName).click();
     cy.get('[data-testid=selected-team-name]').contains(teamName);
   })
+
+  it('should not have a user to appear twice', () => {
+    const teamName = 'Marketing';
+    cy.get('[data-testid=team-list-name]').contains(teamName).click();
+    cy.get('select').eq(0).select('USR2').should('have.value', 'USR2');
+    cy.get('select').eq(0).contains('Ralph Romero');
+    cy.get('select').eq(1).contains('Ralph Romero').should('not.exist');
+  });
 })
