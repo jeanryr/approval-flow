@@ -40,11 +40,38 @@ context('Check approval flow', () => {
     cy.get('[data-testid=selected-team-name]').contains(teamName);
   })
 
-  it('should not have a user to appear twice', () => {
+  it('should select an user and then the user does not appear twice', () => {
     const teamName = 'Marketing';
     cy.get('[data-testid=team-list-name]').contains(teamName).click();
     cy.get('select').eq(0).select('USR2').should('have.value', 'USR2');
     cy.get('select').eq(0).contains('Ralph Romero');
     cy.get('select').eq(1).contains('Ralph Romero').should('not.exist');
+  });
+
+  it('should change the amount `up To` of first step and we should see it updated in the `from` of the second step', () => {
+    const teamName = 'Marketing';
+    cy.get('[data-testid=team-list-name]').contains(teamName).click();
+    cy.get('[data-testid=up-to-select]').clear().type(490);
+    cy.get('[data-testid=from-to-elem]').eq(0).contains('From 490EUR')
+  });
+
+  it('should save locally changes when clicking on `Save approval flow` button', () => {
+    const teamName = 'Marketing';
+    cy.get('[data-testid=team-list-name]').contains(teamName).click();
+    cy.get('[data-testid=up-to-select]').clear().type(423);
+    cy.get('select').eq(0).select('USR1');
+    cy.get('select').eq(1).select('USR3');
+    cy.get('select').eq(2).select('USR7');
+    cy.get('[data-testid=save-btn]').click().should(()=>{
+      expect(localStorage.getItem('teams-approval-scheme')).to.eq('{"TEAM1":[{"from":0,"to":423,"user_id":"USR1"},{"from":423,"to":1000,"user_id":"USR3"},{"from":1000,"to":-1,"user_id":"USR7"}]}')
+    });
+
+    cy.get('[data-testid=team-list-name]').contains(teamName).click();
+    cy.get('[data-testid=from-to-elem]').eq(0).contains('From 423EUR')
+    cy.get('select').eq(0).should('have.value', 'USR1');
+    cy.get('select').eq(1).should('have.value', 'USR3');
+    cy.get('select').eq(2).should('have.value', 'USR7');
+
+    cy.clearLocalStorage()
   });
 })

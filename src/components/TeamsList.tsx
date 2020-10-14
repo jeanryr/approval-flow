@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Team, User } from "../types";
 import "./TeamsList.css";
 
@@ -24,6 +24,9 @@ function TeamsList({ teams, selectTeam, getUser }: { teams: Team[]; selectTeam: 
                           key={`usr${index}`}
                         >{`${user.first_name} ${user.last_name}`}</li>
                       );
+                    }
+                    else {
+                      return null;
                     }
                   })}
                 </ul>

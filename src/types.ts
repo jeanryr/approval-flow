@@ -11,7 +11,7 @@ export type User = {
   email: string;
 };
 
-export type ApprovalScheme = ApprovalSchemeItem[];
+export type ApprovalScheme = { [teamId: string]: ApprovalSchemeItem[] };
 
 export type ApprovalSchemeItem = {
   from: number;
