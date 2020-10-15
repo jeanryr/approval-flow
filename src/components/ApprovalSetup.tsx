@@ -134,10 +134,10 @@ function ApprovalSetup({
                   deleteThreshold={deleteThreshold}
                   updateUser={updateUser}
                 />
-                {(index < approvalScheme.length -1) && <div style={{textAlign: "center"}}><button data-testid="add-threshold" onClick={() => addThreshold(index)}>Add a threshold</button></div>}
+                {(index < approvalScheme.length -1) && <div className="add-threshold-wrapper"><button data-testid="add-threshold" onClick={() => addThreshold(index)}>Add a threshold</button></div>}
               </div>
             ))}
-            <button onClick={() => unSelectTeam()}>Cancel</button>
+            <button className="cancel-btn" onClick={() => unSelectTeam()}>Cancel</button>
             <button data-testid="save-btn" onClick={() => saveApprovalSchemeToLocalStorage(approvalScheme, selectedTeam.id)}>
               Save approval flow
             </button>

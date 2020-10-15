@@ -49,7 +49,7 @@ function ApprovalItem({
         <div data-testid="from-to-elem">
           From {item.from}EUR to{" "}
           <input type="number" value={item.to} onChange={(e) => updateThreshold(index, parseInt(e.target.value))} />
-          EUR <button data-testid="delete-threshold" style={{ float: "right" }} onClick={()=> deleteThreshold(index)}>Delete</button>
+          EUR <button className="delete-btn" data-testid="delete-threshold" onClick={()=> deleteThreshold(index)}>Delete</button>
         </div>
       )}
       {index === -1 && (

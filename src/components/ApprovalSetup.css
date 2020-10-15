@@ -1,3 +1,11 @@
 .container .card-approval-setup {
   width: 840px;
 }
+
+.cancel-btn {
+  margin-right: 10px;
+}
+
+.add-threshold-wrapper{
+  text-align: center;
+}
