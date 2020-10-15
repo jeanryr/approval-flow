@@ -58,9 +58,22 @@ function ApprovalSetup({
 
   function updateThreshold(index: number, threshold: number) {
     let newApprovalScheme = [...approvalScheme];
-    if (index < newApprovalScheme.length) {
-      newApprovalScheme[index].to = threshold;
-      newApprovalScheme[index + 1].from = threshold;
+    if (index < newApprovalScheme.length && !isNaN(threshold)) {
+      if ((index === 0 && (threshold > newApprovalScheme[index+1].to)) ||
+      (index > 0 && index < newApprovalScheme.length -2 && (threshold > newApprovalScheme[index+1].to || threshold < newApprovalScheme[index].from)) ||
+      (index === newApprovalScheme.length -2 && (threshold < newApprovalScheme[index].from)) 
+      ){
+        console.log(index === 0 && threshold < 0 );
+        console.log(index > 0 && threshold < newApprovalScheme[index-1].from);
+        console.log(index < newApprovalScheme.length -2 && threshold > newApprovalScheme[index+1].from);
+        debugger;
+        setApprovalScheme(newApprovalScheme);
+        alert("that's not valid");
+      }
+      else {
+       newApprovalScheme[index].to = threshold;
+       newApprovalScheme[index + 1].from = threshold;
+      }
     }
     setApprovalScheme(newApprovalScheme);
   }

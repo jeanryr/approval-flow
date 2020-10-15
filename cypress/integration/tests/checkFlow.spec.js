@@ -51,33 +51,51 @@ context('Check approval flow', () => {
   it('should change the amount `up To` of first step and we should see it updated in the `from` of the second step', () => {
     const teamName = 'Marketing';
     cy.get('[data-testid=team-list-name]').contains(teamName).click();
-    cy.get('[data-testid=up-to-select]').clear().type(490);
+    cy.get('[data-testid=up-to-select]').invoke('val', '').clear().type(490).blur();
     cy.get('[data-testid=from-to-elem]').eq(0).contains('From 490EUR')
   });
 
-  it('should add a threshold from 500 to 700', () => {
+  it('should add a threshold from 25 to 50', () => {
     const teamName = 'Marketing';
     cy.get('[data-testid=team-list-name]').contains(teamName).click();
     cy.get('[data-testid=add-threshold]').eq(0).click();
-    cy.get('input').eq(1).clear().type(700);
-    cy.get('[data-testid=from-to-elem]').eq(1).contains('From 700EUR')
+    cy.get('[data-testid=up-to-select]').invoke('val', '').clear().type(25).blur();
+    cy.get('[data-testid=from-to-elem]').eq(0).within (()=> {
+      cy.get('input').type('{backspace}');
+    });
+    cy.get('[data-testid=from-to-elem]').eq(0).contains('From 25EUR');
+    cy.get('[data-testid=from-to-elem]').eq(1).contains('From 50EUR');
+  });
+
+
+  it('should display an alert with message error when putting a wrong value', () => {
+    const teamName = 'Marketing';
+    const stub = cy.stub()  
+    cy.on ('window:alert', stub)
+    cy.get('[data-testid=team-list-name]').contains(teamName).click();
+    cy.get('[data-testid=up-to-select]').invoke('val', '').clear().type(15000).blur()
+    .then(() => {
+      expect(stub.getCall(0)).to.be.calledWith('that\'s not valid');
+    })
   });
 
   it('should delete the middle threshold', () => {
     const teamName = 'Marketing';
-    const valueToModify = 1500;
     cy.get('[data-testid=team-list-name]').contains(teamName).click();
-    cy.get('input').eq(1).clear().type(valueToModify);
+    cy.get('[data-testid=up-to-select]').invoke('val', '').clear().type(25).blur()
+    cy.get('[data-testid=from-to-elem]').eq(0).within (()=> {
+      cy.get('input').type('{backspace}');
+    });
     cy.get('[data-testid=delete-threshold]').eq(0).click();
     cy.get('[data-testid=from-to-elem]').should('not.exist');
-    cy.get('[data-testid=above-elem]').contains(`Above ${valueToModify}EUR`);
+    cy.get('[data-testid=above-elem]').contains(`Above 100EUR`);
   });
 
   it('should save locally changes when clicking on `Save approval flow` button', () => {
     const teamName = 'Marketing';
     const valueToModify = 423;
     cy.get('[data-testid=team-list-name]').contains(teamName).click();
-    cy.get('[data-testid=up-to-select]').clear().type(valueToModify);
+    cy.get('[data-testid=up-to-select]').invoke('val', '').clear().type(valueToModify).blur();
     cy.get('select').eq(0).select('USR1');
     cy.get('select').eq(1).select('USR3');
     cy.get('select').eq(2).select('USR7');
