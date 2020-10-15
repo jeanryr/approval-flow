@@ -63,10 +63,6 @@ function ApprovalSetup({
       (index > 0 && index < newApprovalScheme.length -2 && (threshold > newApprovalScheme[index+1].to || threshold < newApprovalScheme[index].from)) ||
       (index === newApprovalScheme.length -2 && (threshold < newApprovalScheme[index].from)) 
       ){
-        console.log(index === 0 && threshold < 0 );
-        console.log(index > 0 && threshold < newApprovalScheme[index-1].from);
-        console.log(index < newApprovalScheme.length -2 && threshold > newApprovalScheme[index+1].from);
-        debugger;
         setApprovalScheme(newApprovalScheme);
         alert("that's not valid");
       }
@@ -127,9 +123,9 @@ function ApprovalSetup({
         ) : (
           <div className="card-body">
             {approvalScheme.map((approvalItem, index) => (
-              <div>
+              <div key={`approvalItem${index}${approvalItem.from}${approvalItem.user_id}`}>
                 <ApprovalItem
-                  key={`approvalItem${index}`}
+                  key={`approvalItem${index}${approvalItem.from}${approvalItem.user_id}`}
                   item={approvalItem}
                   index={index === approvalScheme.length - 1 ? -1 : index}
                   availableUsers={availableUsers}
